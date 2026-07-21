@@ -1,7 +1,7 @@
 {
-  "name": "HomeSchool Hub",
-  "short_name": "HS Hub",
-  "description": "Smart home dashboard PWA offline-first untuk homeschooling keluarga.",
+  "name": "HomeSchool Hub Pro",
+  "short_name": "HSH Pro",
+  "description": "PWA homeschooling keluarga dengan login, database anak, life skill sets, target, dan progress log.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
