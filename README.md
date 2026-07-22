@@ -49,3 +49,25 @@ Versi ini sudah menambahkan Supabase Realtime untuk tabel:
 Jika ayah menambah target dari HP dan ibu sedang membuka aplikasi, aplikasi ibu akan auto-refresh dan menampilkan notifikasi perangkat jika izin notifikasi sudah diberikan.
 
 Catatan: notifikasi dalam versi static ini adalah notifikasi realtime saat aplikasi aktif/terpasang dan service worker siap. Untuk push notification penuh saat browser benar-benar tertutup lama, dibutuhkan backend/Edge Function + Web Push/VAPID.
+
+
+## Bugfix 2026-07-22
+
+Memperbaiki error browser:
+
+```txt
+Uncaught SyntaxError: Identifier 'top' has already been declared
+```
+
+Penyebabnya adalah nama fungsi internal `top()` bentrok dengan global `window.top` di browser. Fungsi sudah diganti menjadi `renderTopbar()`.
+
+
+## Config Sudah Diisi
+
+File `config.js` pada ZIP ini sudah berisi Supabase URL dan publishable/anon key yang diberikan oleh pengguna.
+
+Tetap pastikan di Supabase SQL Editor sudah menjalankan file:
+
+```txt
+supabase/schema-family.sql
+```

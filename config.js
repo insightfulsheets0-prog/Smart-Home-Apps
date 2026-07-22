@@ -1,7 +1,7 @@
 // HomeSchool Hub Family Edition Config
-// Isi dari Supabase Project Settings > API
-// Public anon key boleh dipakai di browser. JANGAN gunakan service_role key di sini.
+// Supabase public config untuk project keluarga.
+// Catatan: anon/publishable key boleh dipakai di browser. Jangan pernah memakai service_role key di frontend.
 window.HSH_CONFIG = {
-  SUPABASE_URL: "https://YOUR_PROJECT_ID.supabase.co",
-  SUPABASE_ANON_KEY: "YOUR_SUPABASE_ANON_PUBLIC_KEY"
+  SUPABASE_URL: "https://hgyjknannalabfaacbla.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_KhSdyz6zh3X3R0vBSsY_EQ_22MWd6Bi"
 };
