@@ -1,7 +1,7 @@
 {
-  "name": "HomeSchool Hub Pro",
-  "short_name": "HSH Pro",
-  "description": "PWA homeschooling keluarga dengan login, database anak, life skill sets, target, dan progress log.",
+  "name": "HomeSchool Hub Family Edition",
+  "short_name": "HSH Family",
+  "description": "Smart home learning PWA untuk keluarga homeschooling dengan household sharing.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

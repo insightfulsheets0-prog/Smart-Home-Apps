@@ -1,36 +1,51 @@
-# HomeSchool Hub Pro
+# HomeSchool Hub Family Edition
 
-PWA homeschooling keluarga yang siap deploy ke Vercel tanpa build step.
+Versi siap upload ke GitHub dan deploy Vercel tanpa build command.
 
-## Fitur
+## Konsep
 
-- Login/daftar orang tua dengan Supabase Auth
-- Database anak
-- Life Skill Sets
-- Target per anak
-- Progress log
-- Offline cache dengan service worker
-- Data terakhir tersimpan lokal dengan localStorage
-- Mobile-first PWA
+Aplikasi ini memakai model Household, sehingga akun ayah, ibu, dan anak dapat melihat data keluarga yang sama melalui invite code.
 
-## Setup Supabase
+## Setup
 
-1. Buat project Supabase.
+1. Buat project baru di Supabase.
 2. Buka SQL Editor.
-3. Copy isi `supabase/schema.sql` lalu klik Run.
+3. Jalankan isi file `supabase/schema-family.sql`.
 4. Buka Project Settings > API.
-5. Copy Project URL dan anon/public key.
-6. Isi file `config.js`.
+5. Isi `config.js` dengan Project URL dan anon/public key.
+6. Upload semua file ke GitHub.
+7. Deploy ke Vercel dengan:
+   - Framework Preset: Other
+   - Install Command: kosong
+   - Build Command: kosong
+   - Output Directory: .
 
-## Deploy Vercel
+## Flow Pakai
 
-1. Upload semua file ke GitHub.
-2. Import repository ke Vercel.
-3. Framework Preset: Other.
-4. Build Command: kosongkan.
-5. Output Directory: .
-6. Deploy.
+1. Akun pertama daftar dan login.
+2. Buat Household, contoh: Keluarga FII.
+3. Buka menu Member, salin Invite Code.
+4. Akun kedua daftar/login.
+5. Pilih Gabung Household dan masukkan Invite Code.
+6. Data anak, skill set, target, dan progress akan tampil bersama.
 
-## Catatan keamanan
+## Catatan
 
-Anon/public key boleh berada di browser. Keamanan data diatur oleh Row Level Security di database. Jangan pernah menaruh service role key di browser.
+- Jangan pakai service_role key di browser.
+- Public anon key aman dipakai karena database dilindungi RLS.
+- Disarankan memakai Supabase project baru agar tidak bentrok dengan schema versi lama.
+
+
+## Multi-device Sync dan Notifikasi
+
+Versi ini sudah menambahkan Supabase Realtime untuk tabel:
+
+- children
+- life_skill_sets
+- targets
+- progress_logs
+- household_members
+
+Jika ayah menambah target dari HP dan ibu sedang membuka aplikasi, aplikasi ibu akan auto-refresh dan menampilkan notifikasi perangkat jika izin notifikasi sudah diberikan.
+
+Catatan: notifikasi dalam versi static ini adalah notifikasi realtime saat aplikasi aktif/terpasang dan service worker siap. Untuk push notification penuh saat browser benar-benar tertutup lama, dibutuhkan backend/Edge Function + Web Push/VAPID.

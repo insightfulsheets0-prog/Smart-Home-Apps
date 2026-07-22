@@ -1,11 +1,7 @@
-// HomeSchool Hub Supabase Config
-// 1. Buat project di Supabase.
-// 2. Buka Project Settings > API.
-// 3. Copy Project URL dan anon/public key.
-// 4. Isi nilai di bawah ini lalu commit ke GitHub.
-// Catatan: anon/public key memang dirancang untuk dipakai di browser. Keamanan data dijaga oleh RLS policy di supabase/schema.sql.
-
+// HomeSchool Hub Family Edition Config
+// Isi dari Supabase Project Settings > API
+// Public anon key boleh dipakai di browser. JANGAN gunakan service_role key di sini.
 window.HSH_CONFIG = {
-  SUPABASE_URL: "https://hgyjknannalabfaacbla.supabase.co",
-  SUPABASE_ANON_KEY: "sb_publishable_KhSdyz6zh3X3R0vBSsY_EQ_22MWd6Bi"
+  SUPABASE_URL: "https://YOUR_PROJECT_ID.supabase.co",
+  SUPABASE_ANON_KEY: "YOUR_SUPABASE_ANON_PUBLIC_KEY"
 };
