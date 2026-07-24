@@ -62,12 +62,44 @@ Uncaught SyntaxError: Identifier 'top' has already been declared
 Penyebabnya adalah nama fungsi internal `top()` bentrok dengan global `window.top` di browser. Fungsi sudah diganti menjadi `renderTopbar()`.
 
 
-## Config Sudah Diisi
+## Fitur Visi Misi
 
-File `config.js` pada ZIP ini sudah berisi Supabase URL dan publishable/anon key yang diberikan oleh pengguna.
+Versi ini menambahkan menu **Visi** yang tersimpan di Supabase per Household.
 
-Tetap pastikan di Supabase SQL Editor sudah menjalankan file:
+Data yang disimpan:
 
-```txt
-supabase/schema-family.sql
-```
+- Visi homeschooling keluarga
+- Misi pendidikan
+- Nilai utama keluarga
+- Alasan memilih homeschooling
+- Prinsip keluarga
+
+Jika ayah atau ibu mengubah visi misi dari satu perangkat, perangkat lain dalam household yang sama akan tersinkron lewat Supabase Realtime.
+
+
+## Bugfix 2026-07-24: Anggota household (istri/suami) tidak muncul di menu Member
+
+Penyebab:
+
+1. Query member memakai auto-join PostgREST ke tabel `profiles`. Karena `household_members.user_id` tidak punya foreign key langsung ke `profiles`, join ini sering gagal diam-diam sehingga daftar member kosong.
+2. Kebijakan RLS `profiles_select_own` hanya mengizinkan seseorang melihat baris profilnya sendiri, sehingga pasangan tidak bisa saling melihat nama/email walau join berhasil.
+3. Jika opsi "Confirm email" aktif di Supabase Auth, saat sign up belum ada session aktif, sehingga pembuatan baris `profiles` dari sisi browser bisa gagal.
+
+Perbaikan:
+
+- `app.js`: mengambil `household_members` dan `profiles` lewat dua query terpisah lalu digabung manual, tidak lagi bergantung pada auto-join.
+- `supabase/schema-family.sql`: menambahkan trigger `on_auth_user_created` agar baris `profiles` otomatis dibuat di server setiap ada akun baru, ditambah query backfill untuk akun yang sudah lebih dulu daftar, dan kebijakan RLS baru `profiles_select_household` agar sesama anggota household bisa saling melihat nama.
+- `sw.js`: versi cache dinaikkan supaya pengguna PWA yang sudah install mendapat kode terbaru.
+
+**Wajib jalankan ulang** isi `supabase/schema-family.sql` di SQL Editor Supabase (aman dijalankan berkali-kali) agar perbaikan ini aktif, lalu upload ulang file `app.js` dan `sw.js` ke deployment Anda.
+
+
+## Fitur Baru: Menu Panduan
+
+Menambahkan tab **Panduan** (antara Home dan Visi) sebagai titik awal bagi orang tua yang baru mulai homeschooling:
+
+- **Edukasi Dasar** (accordion, ketuk untuk buka): apa itu homeschooling, dasar hukum di Indonesia (UU No. 20/2003), jalur ijazah resmi lewat PKBM & Paket A/B/C, serta gambaran alur dan dokumen pendaftaran ke PKBM.
+- **Langkah di Aplikasi Ini**: checklist berurutan (Visi Misi → Data Anak → Skill Set → Target → Progress) dengan status Selesai/Belum dan tombol langsung ke tab terkait.
+- **Kartu "Langkah Selanjutnya"** otomatis muncul di Dashboard, menunjukkan langkah pertama yang belum diselesaikan household, supaya keluarga tahu harus mulai dari mana tanpa perlu menebak-nebak.
+
+Catatan: konten edukasi di menu Panduan bersifat gambaran umum. Persyaratan, biaya, dan mekanisme ujian kesetaraan (sekarang disebut TKA) bisa berbeda tiap daerah dan berubah dari waktu ke waktu — selalu konfirmasi ke PKBM/dinas pendidikan setempat sebelum mendaftar.
