@@ -117,3 +117,16 @@ Tab baru **Milestone** untuk mencatat pencapaian tiap anak, terpisah dari Target
 - Di menu **Panduan**, ada topik baru "Soal Milestone: Perspektif Pakar & Praktisi" yang merangkum pandangan John Holt (unschooling), Charlotte Mason, pendekatan Classical/school-at-home, dan praktisi HS Indonesia (Rumah Inspirasi) — supaya orang tua paham fitur ini boleh dipakai ketat atau longgar tergantung visi & metode HS keluarga masing-masing.
 
 **Wajib jalankan SQL baru**: buka SQL Editor Supabase, jalankan bagian `-- Fitur 2026-07-25: Milestone belajar anak` di `supabase/schema-family.sql` (bukan seluruh file — lihat catatan di bagian atas README ini soal policy yang sudah ada). Lalu upload ulang `app.js`, `sw.js`, dan `README.md`.
+
+
+## Update: Milestone kini bisa mengikuti 3 acuan berbeda
+
+Tombol **Template** di tab Milestone sekarang menampilkan pilihan acuan (bukan langsung isi satu set tetap):
+
+1. **Umum (Kurikulum Merdeka)** — fase Fondasi, A-F. Cocok kalau keluarga berencana ke jalur PKBM/ijazah kesetaraan.
+2. **Charlotte Mason** — Form I sampai VI, mengikuti gambaran umum dari programme Parents' Union School: Form I fokus narasi lisan & nature study, Form II mulai narasi tertulis, Form III-IV menambah dictation & bahasa asing, Form V-VI anak mulai memilih fokus sendiri. CM sendiri menekankan pindah Form itu soal kesiapan anak, bukan usia baku.
+3. **Classical (Trivium)** — mengacu ke buku *The Well-Trained Mind* (Susan Wise Bauer & Jessie Wise): Grammar Stage (TK-kelas 4, menghafal fakta), Logic Stage (kelas 5-8, mulai analitis/"kenapa"), Rhetoric Stage (kelas 9-12, menulis & bicara dengan gaya orisinal).
+
+Milestone yang sudah tersimpan bisa tetap diedit/dihapus manual meski memakai acuan tertentu — jadi tidak terkunci pada satu metode. Bacaan lengkap perbandingan ketiganya ada di menu **Panduan → Perbandingan Mendalam: Milestone Charlotte Mason vs Classical**.
+
+Tidak ada perubahan skema database untuk update ini (tabel `milestones` yang sudah dibuat sebelumnya cukup, kolom `fase` memang bertipe teks bebas) — jadi cukup upload ulang `app.js`, `sw.js`, `README.md`, tanpa perlu jalankan SQL baru.
