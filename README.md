@@ -91,7 +91,9 @@ Perbaikan:
 - `supabase/schema-family.sql`: menambahkan trigger `on_auth_user_created` agar baris `profiles` otomatis dibuat di server setiap ada akun baru, ditambah query backfill untuk akun yang sudah lebih dulu daftar, dan kebijakan RLS baru `profiles_select_household` agar sesama anggota household bisa saling melihat nama.
 - `sw.js`: versi cache dinaikkan supaya pengguna PWA yang sudah install mendapat kode terbaru.
 
-**Wajib jalankan ulang** isi `supabase/schema-family.sql` di SQL Editor Supabase (aman dijalankan berkali-kali) agar perbaikan ini aktif, lalu upload ulang file `app.js` dan `sw.js` ke deployment Anda.
+**Wajib jalankan** isi `supabase/schema-family.sql` di SQL Editor Supabase, lalu upload ulang file `app.js` dan `sw.js` ke deployment Anda.
+
+> Catatan penting soal SQL: kalau project Supabase Anda **sudah pernah** menjalankan `schema-family.sql` sebelumnya (tabel dan policy dasar sudah ada), jangan jalankan ulang **seluruh file** dari awal — akan muncul error `policy ... already exists` karena sebagian besar `create policy` di bagian atas file belum pakai pengaman `drop policy if exists`. Untuk update/fix berikutnya, cukup jalankan **bagian baru yang ditambahkan** (ditandai komentar `-- Fix ...` atau `-- Fitur ...` di dekat akhir file), karena bagian-bagian baru itu memang ditulis idempotent (aman diulang).
 
 
 ## Fitur Baru: Menu Panduan
@@ -103,3 +105,15 @@ Menambahkan tab **Panduan** (antara Home dan Visi) sebagai titik awal bagi orang
 - **Kartu "Langkah Selanjutnya"** otomatis muncul di Dashboard, menunjukkan langkah pertama yang belum diselesaikan household, supaya keluarga tahu harus mulai dari mana tanpa perlu menebak-nebak.
 
 Catatan: konten edukasi di menu Panduan bersifat gambaran umum. Persyaratan, biaya, dan mekanisme ujian kesetaraan (sekarang disebut TKA) bisa berbeda tiap daerah dan berubah dari waktu ke waktu — selalu konfirmasi ke PKBM/dinas pendidikan setempat sebelum mendaftar.
+
+
+## Fitur Baru: Milestone Belajar Anak
+
+Tab baru **Milestone** untuk mencatat pencapaian tiap anak, terpisah dari Target (yang sifatnya progres harian/pekanan berulang). Milestone lebih ke penanda tonggak perkembangan, misalnya "Hafal perkalian 1-10" atau "Membaca kalimat sederhana dengan lancar".
+
+- Dikelompokkan per **fase** (Fondasi, A–F), mengacu longgar ke Fase Capaian Pembelajaran Kurikulum Merdeka (Kemendikbudristek) — dipakai karena ini kerangka usia yang juga jadi acuan PKBM/Paket A/B/C, bukan karena keluarga wajib mengikutinya secara kaku.
+- Ada tombol **Template** per anak untuk mengisi contoh milestone awal per fase, bisa diedit/dihapus bebas.
+- Tiap milestone bisa ditandai **Tercapai** kapan saja (tercatat tanggalnya), dan tersinkron real-time ke semua anggota household seperti fitur lain.
+- Di menu **Panduan**, ada topik baru "Soal Milestone: Perspektif Pakar & Praktisi" yang merangkum pandangan John Holt (unschooling), Charlotte Mason, pendekatan Classical/school-at-home, dan praktisi HS Indonesia (Rumah Inspirasi) — supaya orang tua paham fitur ini boleh dipakai ketat atau longgar tergantung visi & metode HS keluarga masing-masing.
+
+**Wajib jalankan SQL baru**: buka SQL Editor Supabase, jalankan bagian `-- Fitur 2026-07-25: Milestone belajar anak` di `supabase/schema-family.sql` (bukan seluruh file — lihat catatan di bagian atas README ini soal policy yang sudah ada). Lalu upload ulang `app.js`, `sw.js`, dan `README.md`.
