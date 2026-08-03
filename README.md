@@ -175,3 +175,27 @@ Tombol **Template** muncul di tab Orang Tua → Kompetisi Pekerjaan Rumah kalau 
 ### Panduan Dirombak Jadi Lebih Ringkas
 
 Sebelumnya menu Panduan berupa accordion panjang yang bikin scroll jauh ke bawah. Sekarang jadi dua tingkat: halaman utama hanya daftar tombol topik singkat, dan menekan salah satu topik akan membuka halaman detailnya sendiri (dengan tombol "‹ Kembali ke Panduan" untuk balik). Jauh lebih ringkas dibuka dari HP.
+
+
+## Update: Tab Orang Tua & Anak Jadi Menu, Bukan Tumpukan Card
+
+Sebelumnya tab **Orang Tua** menumpuk 6 fitur berbeda (Panduan, Kompetisi Pekerjaan Rumah, Target, Skill Set, Member, Settings) jadi satu halaman panjang yang bikin scroll jauh dan terasa penuh untuk orang baru pertama buka app. Sekarang dirombak jadi 2 tingkat, seperti menu di HP pada umumnya:
+
+- **Layar pertama** (menu) — cuma daftar 6 tombol besar dengan ikon + deskripsi 1 baris. Ringan, jelas, tidak membuat bingung.
+- **Tekan salah satu** → masuk ke halaman fitur itu saja (fokus, tidak tercampur fitur lain), dengan tombol "‹ Menu Orang Tua" untuk balik ke daftar menu.
+
+Pola yang sama diterapkan ke tab **Anak**, yang sekarang jadi menu 2 pilihan: Data Anak dan Milestone Tumbuh Kembang.
+
+Tombol "Langkah Selanjutnya" di Beranda dan checklist di Panduan tetap berfungsi seperti biasa — begitu ditekan, langsung loncat ke halaman fitur yang tepat (bukan cuma ke menu), jadi tidak menambah langkah ekstra buat yang memang mau lanjut isi data.
+
+Tidak ada perubahan skema database untuk update ini — cukup upload ulang `app.js`.
+
+### Beranda Juga Dirampingkan
+
+Tab Beranda sebelumnya masih menumpuk: hero + grid 4 kartu statistik + daftar penuh Target Aktif + 4 kartu Visi Misi (vision, misi, nilai, alasan) — total hampir 9 kartu di satu layar. Sekarang dipangkas jadi maksimal 3 kartu:
+
+1. Hero (progress + ringkasan singkat "X anak · Y target aktif · Z member" dalam 1 baris teks, bukan kartu terpisah).
+2. Kartu "Langkah Selanjutnya" (kalau masih ada langkah yang belum selesai).
+3. Kartu Visi ringkas (judul + pernyataan visi + jumlah poin misi/nilai/alasan), tombol Edit membuka form lengkap yang sama seperti sebelumnya — datanya tidak berkurang, cuma tampilannya diringkas.
+
+Daftar Target Aktif yang tadinya double-tampil di Beranda sekarang cuma ada di satu tempat: Orang Tua → Target Belajar. Pemilih household (kalau household lebih dari satu) juga disembunyikan otomatis kalau cuma ada 1 household, supaya tidak ada elemen yang tidak perlu.
