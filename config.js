@@ -1,4 +1,4 @@
-// HomeSchool Hub Family Edition Config
+// HomeSchool Hub Family Vision Edition Config
 // Supabase public config untuk project keluarga.
 // Catatan: anon/publishable key boleh dipakai di browser. Jangan pernah memakai service_role key di frontend.
 window.HSH_CONFIG = {

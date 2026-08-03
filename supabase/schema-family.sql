@@ -190,3 +190,168 @@ do $$ begin alter publication supabase_realtime add table public.life_skill_sets
 do $$ begin alter publication supabase_realtime add table public.targets; exception when duplicate_object then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.progress_logs; exception when duplicate_object then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.household_members; exception when duplicate_object then null; end $$;
+
+
+-- Household profile: visi, misi, nilai utama, alasan, dan prinsip keluarga.
+create table if not exists public.household_profiles (
+  household_id uuid primary key references public.households(id) on delete cascade,
+  vision text,
+  mission jsonb default '[]'::jsonb,
+  values jsonb default '[]'::jsonb,
+  reasons jsonb default '[]'::jsonb,
+  principles text,
+  updated_by uuid references auth.users(id) on delete set null,
+  updated_at timestamptz default now()
+);
+
+alter table public.household_profiles enable row level security;
+
+drop policy if exists "profiles_household_select" on public.household_profiles;
+drop policy if exists "profiles_household_insert" on public.household_profiles;
+drop policy if exists "profiles_household_update" on public.household_profiles;
+drop policy if exists "profiles_household_delete" on public.household_profiles;
+
+create policy "profiles_household_select" on public.household_profiles for select using (public.is_household_member(household_id));
+create policy "profiles_household_insert" on public.household_profiles for insert with check (public.is_household_owner(household_id));
+create policy "profiles_household_update" on public.household_profiles for update using (public.is_household_owner(household_id)) with check (public.is_household_owner(household_id));
+create policy "profiles_household_delete" on public.household_profiles for delete using (public.is_household_owner(household_id));
+
+do $$ begin alter publication supabase_realtime add table public.household_profiles; exception when duplicate_object then null; end $$;
+
+
+-- =========================================================
+-- Fix 2026-07-24: Member Household tidak tampil
+-- =========================================================
+-- Masalah 1: Jika email confirmation aktif di Supabase Auth,
+-- sb.auth.signUp() tidak langsung memberi session, sehingga upsert
+-- ke public.profiles dari sisi browser gagal (RLS butuh auth.uid()).
+-- Solusi: buat profil otomatis lewat trigger di server, bukan dari browser.
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  insert into public.profiles(id, email, full_name)
+  values (new.id, new.email, coalesce(new.raw_user_meta_data->>'full_name', new.email))
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+
+-- Backfill: buat profil untuk akun yang sudah terlanjur daftar
+-- sebelum trigger di atas ada (misalnya akun istri Anda sekarang).
+insert into public.profiles (id, email, full_name)
+select u.id, u.email, coalesce(u.raw_user_meta_data->>'full_name', u.email)
+from auth.users u
+left join public.profiles p on p.id = u.id
+where p.id is null;
+
+-- Masalah 2: RLS profiles_select_own hanya mengizinkan orang melihat
+-- profilnya sendiri, jadi ayah tidak bisa melihat nama/email ibu, dst.
+-- Tambahkan izin: boleh lihat profil orang lain jika satu household.
+drop policy if exists "profiles_select_household" on public.profiles;
+create policy "profiles_select_household" on public.profiles for select using (
+  exists (
+    select 1
+    from public.household_members hm_target
+    join public.household_members hm_me
+      on hm_me.household_id = hm_target.household_id
+    where hm_target.user_id = profiles.id
+      and hm_me.user_id = auth.uid()
+      and hm_target.status = 'active'
+      and hm_me.status = 'active'
+  )
+);
+
+
+-- =========================================================
+-- Fitur 2026-07-25: Milestone belajar anak
+-- =========================================================
+-- Tabel baru untuk menandai pencapaian anak per fase (Fondasi, A-F,
+-- mengacu longgar ke Capaian Pembelajaran Kurikulum Merdeka).
+-- Aman dijalankan ulang: pakai "if not exists" dan "drop policy if exists".
+create table if not exists public.milestones (
+  id uuid primary key default gen_random_uuid(),
+  household_id uuid not null references public.households(id) on delete cascade,
+  created_by uuid references auth.users(id) on delete set null,
+  child_id uuid not null references public.children(id) on delete cascade,
+  fase text not null default 'A',
+  title text not null,
+  description text,
+  achieved boolean not null default false,
+  achieved_at timestamptz,
+  created_at timestamptz default now()
+);
+
+alter table public.milestones enable row level security;
+
+drop policy if exists "milestones_select_household" on public.milestones;
+create policy "milestones_select_household" on public.milestones for select using (public.is_household_member(household_id));
+
+drop policy if exists "milestones_insert_household" on public.milestones;
+create policy "milestones_insert_household" on public.milestones for insert with check (public.is_household_member(household_id));
+
+drop policy if exists "milestones_update_household" on public.milestones;
+create policy "milestones_update_household" on public.milestones for update using (public.is_household_member(household_id)) with check (public.is_household_member(household_id));
+
+drop policy if exists "milestones_delete_household" on public.milestones;
+create policy "milestones_delete_household" on public.milestones for delete using (public.is_household_owner(household_id));
+
+do $$ begin alter publication supabase_realtime add table public.milestones; exception when duplicate_object then null; end $$;
+
+
+-- =========================================================
+-- Fitur 2026-07-26: Kompetisi Pekerjaan Rumah (poin keluarga)
+-- =========================================================
+-- "chores" = daftar pekerjaan rumah, "chore_logs" = tiap kali ada yang
+-- menyelesaikannya (poin diakumulasi dari sini, mirip pola progress_logs).
+create table if not exists public.chores (
+  id uuid primary key default gen_random_uuid(),
+  household_id uuid not null references public.households(id) on delete cascade,
+  created_by uuid references auth.users(id) on delete set null,
+  title text not null,
+  pic uuid references auth.users(id) on delete set null,
+  points int not null default 10,
+  created_at timestamptz default now()
+);
+
+alter table public.chores enable row level security;
+
+drop policy if exists "chores_select_household" on public.chores;
+create policy "chores_select_household" on public.chores for select using (public.is_household_member(household_id));
+
+drop policy if exists "chores_insert_household" on public.chores;
+create policy "chores_insert_household" on public.chores for insert with check (public.is_household_member(household_id));
+
+drop policy if exists "chores_update_household" on public.chores;
+create policy "chores_update_household" on public.chores for update using (public.is_household_member(household_id)) with check (public.is_household_member(household_id));
+
+drop policy if exists "chores_delete_household" on public.chores;
+create policy "chores_delete_household" on public.chores for delete using (public.is_household_owner(household_id));
+
+create table if not exists public.chore_logs (
+  id uuid primary key default gen_random_uuid(),
+  household_id uuid not null references public.households(id) on delete cascade,
+  chore_id uuid not null references public.chores(id) on delete cascade,
+  done_by uuid references auth.users(id) on delete set null,
+  points int not null default 0,
+  done_at timestamptz default now()
+);
+
+alter table public.chore_logs enable row level security;
+
+drop policy if exists "chore_logs_select_household" on public.chore_logs;
+create policy "chore_logs_select_household" on public.chore_logs for select using (public.is_household_member(household_id));
+
+drop policy if exists "chore_logs_insert_household" on public.chore_logs;
+create policy "chore_logs_insert_household" on public.chore_logs for insert with check (public.is_household_member(household_id));
+
+drop policy if exists "chore_logs_delete_household" on public.chore_logs;
+create policy "chore_logs_delete_household" on public.chore_logs for delete using (public.is_household_owner(household_id));
+
+do $$ begin alter publication supabase_realtime add table public.chores; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.chore_logs; exception when duplicate_object then null; end $$;

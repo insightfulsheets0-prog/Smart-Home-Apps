@@ -130,3 +130,35 @@ Tombol **Template** di tab Milestone sekarang menampilkan pilihan acuan (bukan l
 Milestone yang sudah tersimpan bisa tetap diedit/dihapus manual meski memakai acuan tertentu — jadi tidak terkunci pada satu metode. Bacaan lengkap perbandingan ketiganya ada di menu **Panduan → Perbandingan Mendalam: Milestone Charlotte Mason vs Classical**.
 
 Tidak ada perubahan skema database untuk update ini (tabel `milestones` yang sudah dibuat sebelumnya cukup, kolom `fase` memang bertipe teks bebas) — jadi cukup upload ulang `app.js`, `sw.js`, `README.md`, tanpa perlu jalankan SQL baru.
+
+
+## Update Besar: Navigasi 3 Tab (Home Smart App)
+
+Struktur navigasi dirombak jadi 3 tab saja agar lebih fokus sebagai "home smart app":
+
+- **Beranda** — dashboard progress + kartu "Langkah Selanjutnya", dan **Visi & Misi Keluarga** (dipindah ke sini dari tab terpisah, jadi halaman pertama yang dilihat).
+- **Orang Tua** — semua kontrol & perencanaan: Panduan, Target Belajar, Skill Set, **Kompetisi Pekerjaan Rumah (baru)**, Member Household, Settings.
+- **Anak** — dibuat sederhana: Data Anak dan Milestone tumbuh kembang saja.
+
+Kalau Anda pernah menyimpan bookmark/shortcut ke tab lama (misalnya URL dengan referensi tab tertentu), tidak masalah karena navigasi tab disimpan di state aplikasi, bukan di URL.
+
+### Fitur Baru: Kompetisi Pekerjaan Rumah
+
+Ada di tab **Orang Tua**, dibuat supaya beres-beres rumah jadi seru buat seluruh keluarga:
+
+- Buat daftar pekerjaan rumah, masing-masing punya **PIC** (siapa yang biasanya bertugas) dan **nilai poin**.
+- Siapa pun yang benar-benar menyelesaikannya tinggal tekan **"Selesai, Kasih Poin"** — poin otomatis masuk ke akun yang menekan tombol (bukan cuma PIC yang tercatat, supaya tetap kompetitif kalau ada yang membantu di luar jadwalnya).
+- **Papan Poin** di atas daftar menghitung akumulasi poin semua waktu per anggota keluarga, dengan medali 🥇🥈🥉ranking.
+- Tersinkron real-time ke semua anggota household seperti fitur lain.
+
+**Wajib jalankan SQL baru**: buka SQL Editor Supabase, jalankan bagian mulai komentar `-- Fitur 2026-07-26: Kompetisi Pekerjaan Rumah` di `supabase/schema-family.sql` (bikin tabel `chores` dan `chore_logs`). Jangan jalankan seluruh file — lihat catatan di bagian atas README ini. Lalu upload ulang `app.js`, `sw.js`, `style.css`, dan `README.md`.
+
+### Update: Tab Anak Disederhanakan
+
+Tab Anak sekarang isinya cuma dua hal: profil anak, dan Milestone. Target belajar & Skill Set/Kurikulum tetap ada datanya (tidak hilang), hanya dipindah aksesnya ke tab Orang Tua karena sifatnya lebih ke perencanaan yang dilakukan orang tua.
+
+### Update: Milestone Umum untuk Jalur Informal
+
+Menu Panduan dan pilihan Template di tab Anak sekarang punya opsi ke-4: **"Tumbuh Kembang Umum (0-6 tahun)"**, diambil dari acuan KPSP (Kuesioner Pra Skrining Perkembangan) dan Denver II yang direkomendasikan IDAI & WHO — mencakup motorik kasar, motorik halus, bahasa, dan sosial-emosional per rentang usia. Ini paling pas kalau Anda belum menentukan metode akademik tertentu dan masih fokus tahap tumbuh kembang dasar dulu.
+
+Catatan: ini acuan umum untuk referensi, bukan alat diagnosis. Kalau ada kekhawatiran keterlambatan berkembang, tetap periksakan ke dokter anak atau posyandu untuk skrining resmi.
