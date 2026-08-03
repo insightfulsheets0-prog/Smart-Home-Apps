@@ -355,3 +355,9 @@ create policy "chore_logs_delete_household" on public.chore_logs for delete usin
 
 do $$ begin alter publication supabase_realtime add table public.chores; exception when duplicate_object then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.chore_logs; exception when duplicate_object then null; end $$;
+
+
+-- =========================================================
+-- Fitur 2026-08-03: Catatan frekuensi pada pekerjaan rumah
+-- =========================================================
+alter table public.chores add column if not exists note text;

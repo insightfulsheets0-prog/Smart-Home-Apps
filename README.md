@@ -162,3 +162,16 @@ Tab Anak sekarang isinya cuma dua hal: profil anak, dan Milestone. Target belaja
 Menu Panduan dan pilihan Template di tab Anak sekarang punya opsi ke-4: **"Tumbuh Kembang Umum (0-6 tahun)"**, diambil dari acuan KPSP (Kuesioner Pra Skrining Perkembangan) dan Denver II yang direkomendasikan IDAI & WHO — mencakup motorik kasar, motorik halus, bahasa, dan sosial-emosional per rentang usia. Ini paling pas kalau Anda belum menentukan metode akademik tertentu dan masih fokus tahap tumbuh kembang dasar dulu.
 
 Catatan: ini acuan umum untuk referensi, bukan alat diagnosis. Kalau ada kekhawatiran keterlambatan berkembang, tetap periksakan ke dokter anak atau posyandu untuk skrining resmi.
+
+
+## Update: Template Pekerjaan Rumah Siap Pakai + Panduan Lebih Ringkas
+
+### Template Pekerjaan Rumah
+
+Tombol **Template** muncul di tab Orang Tua → Kompetisi Pekerjaan Rumah kalau daftar masih kosong. Isinya 16 pekerjaan rumah standar (Ayah: sapu halaman, beresin kamar, nyuci baju, dst. Bunda: ngepel, masak, nyuci piring, dst — termasuk catatan frekuensi seperti "Maks 2 minggu sekali" untuk tugas yang tidak perlu tiap hari). Sebelum diisi, Anda tinggal pilih siapa "Ayah" dan siapa "Bunda" dari member household yang sudah terdaftar, aplikasi otomatis memetakan PIC-nya.
+
+**Wajib jalankan SQL baru** (kolom `note` untuk catatan frekuensi): jalankan bagian `-- Fitur 2026-08-03: Catatan frekuensi pada pekerjaan rumah` di `supabase/schema-family.sql`.
+
+### Panduan Dirombak Jadi Lebih Ringkas
+
+Sebelumnya menu Panduan berupa accordion panjang yang bikin scroll jauh ke bawah. Sekarang jadi dua tingkat: halaman utama hanya daftar tombol topik singkat, dan menekan salah satu topik akan membuka halaman detailnya sendiri (dengan tombol "‹ Kembali ke Panduan" untuk balik). Jauh lebih ringkas dibuka dari HP.
